@@ -1,0 +1,30 @@
+{
+  "name": "Geburtstage Offline 1.4.0",
+  "short_name": "Geburtstage lokal",
+  "description": "Lokale Geburtstagsdatenbank ohne Cloud-Verbindung",
+  "lang": "de",
+  "id": "./offline-v140",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#fffaf4",
+  "theme_color": "#9a4f0d",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
