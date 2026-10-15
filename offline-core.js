@@ -34,6 +34,12 @@
   if(confirmed.length!==ids.size||confirmed.some(id=>!ids.has(id))||!state.dirty||!state.deleted||Object.keys(state.dirty).length||Object.keys(state.deleted).length||declared.people!==s.count||declared.confirmed!==confirmed.length||declared.dirty!==0||declared.deleted!==0)fail('Personen-IDs oder Ausgangsbestand sind unvollständig oder unerwartet.');
   return {...s,unique:ids.size};
  }
+ function verifyImportedPeople(actual,expected){
+  // Recompute both summaries from records, never compare importer-specific metadata.
+  const actualSummary=summary(actual),expectedSummary=summary(expected);
+  if(JSON.stringify(actual)!==JSON.stringify(expected)||actualSummary.count!==expectedSummary.count||actualSummary.trash!==expectedSummary.trash||JSON.stringify(actualSummary.trashIds)!==JSON.stringify(expectedSummary.trashIds))fail('Import-Nachprüfung abweichend. Speicherergebnis unklar. Nicht wiederholen; App neu öffnen und Bestand prüfen.');
+  return actualSummary;
+ }
  function validPayload(p){
   if(!p||p.schema!==1||!['mac','iphone','unassigned'].includes(p.deviceRole)||typeof p.datasetId!=='string'||!p.datasetId||!Number.isSafeInteger(p.revision)||p.revision<0||typeof p.createdAt!=='string'||!Number.isFinite(Date.parse(p.createdAt)))fail('Unbekanntes Datenformat oder ungültige Versionsangaben.');
   validatePeople(p.people);return p;
@@ -70,5 +76,5 @@
   importGate(current,candidate,{restore});
   return {...clone(current),people:clone(candidate.payload.people),datasetId:candidate.payload.datasetId,revision:current.revision+1,lastImport:{at:new Date().toISOString(),fileSha:candidate.fileSha,sourceRevision:candidate.payload.revision,sourceCreatedAt:candidate.payload.createdAt,restored:restore}};
  }
- return {FORMAT,MAC_SHA,validateLegacyState,clone,sha,summary,validatePeople,validPayload,pack,unpack,empty,readFile,importGate,replacement,uuid};
+ return {FORMAT,MAC_SHA,validateLegacyState,verifyImportedPeople,clone,sha,summary,validatePeople,validPayload,pack,unpack,empty,readFile,importGate,replacement,uuid};
 });

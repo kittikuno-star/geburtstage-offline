@@ -1,6 +1,6 @@
 'use strict';
 const PREFIX='geburtstage-offline-v140-release-';
-const CACHE=PREFIX+'4e399065ed60716f';
+const CACHE=PREFIX+'0a62ae9eeac4b30f';
 const ASSETS=['./','./index.html','./offline-core.js','./offline-store.js','./legacy-ui.js','./offline-ui.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 const allowed=new Set(ASSETS.map(p=>new URL(p,self.registration.scope).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));

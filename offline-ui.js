@@ -68,15 +68,16 @@ function setupOfflineControls(){
  document.querySelector('#importApproval').oninput=gateApply;
  document.querySelector('#applyOfflineImport').onclick=async()=>{
   if(!pendingOffline||!verifiedBefore)return;
-  const job=pendingOffline;document.querySelector('#applyOfflineImport').disabled=true;pendingOffline=null;
+  const job=pendingOffline;document.querySelector('#applyOfflineImport').disabled=true;pendingOffline=null;let committed=false;
   try{
    if(JSON.stringify(offlineDB.state)!==job.expected)throw Error('Gerätebestand wurde inzwischen verändert. Bitte den Vorgang neu prüfen.');
    const result=await offlineDB.replace(job.candidate,{restore:job.restore});
-   if(JSON.stringify(result.people)!==JSON.stringify(job.candidate.payload.people)||JSON.stringify(OfflineCore.summary(result.people))!==JSON.stringify(job.candidate.summary))throw Error('Import-Nachprüfung abweichend. Nicht wiederholen.');
+   committed=true;
+   const checkedSummary=OfflineCore.verifyImportedPeople(result.people,job.candidate.payload.people);
    selected.clear();await refresh();updateConnection();
    document.querySelector('#offlineDialog').close();
-   showMessage('Austausch geprüft',`${result.people.length} Personen · ${OfflineCore.summary(result.people).trash} im Papierkorb. Der vollständige Inhalt wurde nach dem Speichern erneut geprüft. Die Vorher-Sicherung bleibt erhalten.`);
-  }catch(e){offlineError(e);}finally{resetImport();}
+   showMessage('Austausch geprüft',`${checkedSummary.count} Personen · ${checkedSummary.trash} im Papierkorb. Der vollständige Inhalt wurde nach dem Speichern erneut geprüft. Die Vorher-Sicherung bleibt erhalten.`);
+  }catch(e){if(committed)offlineDB.locked=true;updateConnection();offlineError(e);}finally{resetImport();}
  };
  document.querySelector('#exportInternalBackup').onclick=async()=>{
   try{const backups=await offlineDB.backups();if(!backups.length)throw Error('Noch keine interne Sicherung vorhanden.');
