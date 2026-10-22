@@ -92,5 +92,5 @@
   }
   return result;
  };
- document.addEventListener('DOMContentLoaded',()=>setTimeout(start,0));
+ document.addEventListener('DOMContentLoaded',()=>{let tries=0;const wait=()=>{if(offlineDB.state||offlineDB.locked)start();else if(++tries<40)setTimeout(wait,250);};wait();});
 })();
